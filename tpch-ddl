@@ -1,0 +1,248 @@
+
+
+#############################################################################
+#############################################################################
+#############################################################################
+Use ADLS from commandline
+#############################################################################
+#############################################################################
+#############################################################################
+
+--list directories
+hadoop fs -ls adl://polarisdl01.azuredatalakestore.net/tpch-orc
+
+--make directories
+hadoop fs -ls adl://polarisdl01.azuredatalakestore.net/test_dir
+
+--copy data between HDFS and ADLS
+distcp [hdfs or adls directory source] [hdfs or adls directory targe]
+
+
+
+#############################################################################
+#############################################################################
+#############################################################################
+Collect Statistics
+#############################################################################
+#############################################################################
+#############################################################################
+
+
+analyze table customer_adls compute statistics;
+analyze table lineitem_adls compute statistics;
+analyze table nation_adls compute statistics;
+analyze table orders_adls compute statistics;
+analyze table part_adls compute statistics;
+analyze table partsupp_adls compute statistics;
+analyze table region_adls compute statistics;
+analyze table supplier_adls compute statistics;
+
+analyze table customer_adls compute statistics for columns;
+analyze table lineitem_adls compute statistics for columns;
+analyze table nation_adls compute statistics for columns;
+analyze table orders_adls compute statistics for columns;
+analyze table part_adls compute statistics for columns;
+analyze table partsupp_adls compute statistics for columns;
+analyze table region_adls compute statistics for columns;
+analyze table supplier_adls compute statistics for columns;
+
+
+
+
+#############################################################################
+#############################################################################
+#############################################################################
+Create Managed Tables /w ADLS Location
+#############################################################################
+#############################################################################
+#############################################################################
+
+drop table if exists lineitem;
+create table lineitem_adls
+(L_ORDERKEY BIGINT,
+ L_PARTKEY BIGINT,
+ L_SUPPKEY BIGINT,
+ L_LINENUMBER INT,
+ L_QUANTITY DOUBLE,
+ L_EXTENDEDPRICE DOUBLE,
+ L_DISCOUNT DOUBLE,
+ L_TAX DOUBLE,
+ L_RETURNFLAG STRING,
+ L_LINESTATUS STRING,
+ L_SHIPDATE STRING,
+ L_COMMITDATE STRING,
+ L_RECEIPTDATE STRING,
+ L_SHIPINSTRUCT STRING,
+ L_SHIPMODE STRING,
+ L_COMMENT STRING)
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/lineitem';
+
+drop table if exists part;
+create table part_adls (P_PARTKEY BIGINT,
+ P_NAME STRING,
+ P_MFGR STRING,
+ P_BRAND STRING,
+ P_TYPE STRING,
+ P_SIZE INT,
+ P_CONTAINER STRING,
+ P_RETAILPRICE DOUBLE,
+ P_COMMENT STRING) 
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/part/';
+
+drop table if exists supplier;
+create table supplier_adls (S_SUPPKEY BIGINT,
+ S_NAME STRING,
+ S_ADDRESS STRING,
+ S_NATIONKEY BIGINT,
+ S_PHONE STRING,
+ S_ACCTBAL DOUBLE,
+ S_COMMENT STRING) 
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/supplier/';
+
+drop table if exists partsupp_adls;
+create table partsupp_adls (PS_PARTKEY BIGINT,
+ PS_SUPPKEY BIGINT,
+ PS_AVAILQTY INT,
+ PS_SUPPLYCOST DOUBLE,
+ PS_COMMENT STRING)
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/partsupp';
+
+drop table if exists nation;
+create table nation_adls (N_NATIONKEY BIGINT,
+N_NAME STRING,
+N_REGIONKEY BIGINT,
+N_COMMENT STRING)
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/nation';
+
+drop table if exists region;
+create table region_adls (
+R_REGIONKEY BIGINT,
+R_NAME STRING,
+R_COMMENT STRING)
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/region';
+
+drop table if exists customer;
+create table customer_adls (
+C_CUSTKEY BIGINT,
+C_NAME STRING,
+C_ADDRESS STRING,
+C_NATIONKEY BIGINT,
+C_PHONE STRING,
+C_ACCTBAL DOUBLE,
+C_MKTSEGMENT STRING,
+C_COMMENT STRING)
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/customer';
+
+drop table if exists orders;
+create table orders_adls (
+O_ORDERKEY BIGINT,
+O_CUSTKEY BIGINT,
+O_ORDERSTATUS STRING,
+O_TOTALPRICE DOUBLE,
+O_ORDERDATE STRING,
+O_ORDERPRIORITY STRING,
+O_CLERK STRING,
+O_SHIPPRIORITY INT,
+O_COMMENT STRING)
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch-orc/orders';
+
+#############################################################################
+#############################################################################
+#############################################################################
+Create External Tables /w ADLS Location
+#############################################################################
+#############################################################################
+#############################################################################
+
+create external table lineitem_adls
+(L_ORDERKEY BIGINT,
+ L_PARTKEY BIGINT,
+ L_SUPPKEY BIGINT,
+ L_LINENUMBER INT,
+ L_QUANTITY DOUBLE,
+ L_EXTENDEDPRICE DOUBLE,
+ L_DISCOUNT DOUBLE,
+ L_TAX DOUBLE,
+ L_RETURNFLAG STRING,
+ L_LINESTATUS STRING,
+ L_SHIPDATE STRING,
+ L_COMMITDATE STRING,
+ L_RECEIPTDATE STRING,
+ L_SHIPINSTRUCT STRING,
+ L_SHIPMODE STRING,
+ L_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/lineitem';
+
+drop table if exists part_adls;
+create external table part_adls (P_PARTKEY BIGINT,
+ P_NAME STRING,
+ P_MFGR STRING,
+ P_BRAND STRING,
+ P_TYPE STRING,
+ P_SIZE INT,
+ P_CONTAINER STRING,
+ P_RETAILPRICE DOUBLE,
+ P_COMMENT STRING) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/part/';
+
+drop table if exists supplier_adls;
+create external table supplier_adls (S_SUPPKEY BIGINT,
+ S_NAME STRING,
+ S_ADDRESS STRING,
+ S_NATIONKEY BIGINT,
+ S_PHONE STRING,
+ S_ACCTBAL DOUBLE,
+ S_COMMENT STRING) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/supplier/';
+
+drop table if exists partsupp_adls;
+create external table partsupp_adls (PS_PARTKEY BIGINT,
+ PS_SUPPKEY BIGINT,
+ PS_AVAILQTY INT,
+ PS_SUPPLYCOST DOUBLE,
+ PS_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/partsupp';
+
+drop table if exists nation_adls;
+create external table nation_adls (N_NATIONKEY BIGINT,
+ N_NAME STRING,
+ N_REGIONKEY BIGINT,
+ N_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/nation';
+
+drop table if exists region_adls;
+create external table region_adls (R_REGIONKEY BIGINT,
+ R_NAME STRING,
+ R_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/region';
+
+drop table if exists customer_adls;
+create external table customer_adls (C_CUSTKEY BIGINT,
+ C_NAME STRING,
+ C_ADDRESS STRING,
+ C_NATIONKEY BIGINT,
+ C_PHONE STRING,
+ C_ACCTBAL DOUBLE,
+ C_MKTSEGMENT STRING,
+ C_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/customer';
+
+drop table if exists orders_adls;
+create external table orders_adls (O_ORDERKEY BIGINT,
+ O_CUSTKEY BIGINT,
+ O_ORDERSTATUS STRING,
+ O_TOTALPRICE DOUBLE,
+ O_ORDERDATE STRING,
+ O_ORDERPRIORITY STRING,
+ O_CLERK STRING,
+ O_SHIPPRIORITY INT,
+ O_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION 'adl://polarisdl01.azuredatalakestore.net/tpch/orders';
