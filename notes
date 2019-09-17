@@ -1,0 +1,1023 @@
+tpch datasets
+
+download 
+wget https://github.com/hortonworks/data-tutorials/raw/master/tutorials/hdp/interactive-sql-on-hadoop-with-hive-llap/assets/datagen.tgz
+
+wget https://github.com/cartershanklin/sandbox-datagen/archive/master.zip
+
+create database if not exists tpch_text;
+use tpch_text;
+
+drop table if exists lineitem;
+create external table lineitem 
+(L_ORDERKEY BIGINT,
+ L_PARTKEY BIGINT,
+ L_SUPPKEY BIGINT,
+ L_LINENUMBER INT,
+ L_QUANTITY DOUBLE,
+ L_EXTENDEDPRICE DOUBLE,
+ L_DISCOUNT DOUBLE,
+ L_TAX DOUBLE,
+ L_RETURNFLAG STRING,
+ L_LINESTATUS STRING,
+ L_SHIPDATE STRING,
+ L_COMMITDATE STRING,
+ L_RECEIPTDATE STRING,
+ L_SHIPINSTRUCT STRING,
+ L_SHIPMODE STRING,
+ L_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
+LOCATION '/tmp/tpch-generate/5/lineitem';
+
+drop table if exists part;
+create external table part (P_PARTKEY BIGINT,
+ P_NAME STRING,
+ P_MFGR STRING,
+ P_BRAND STRING,
+ P_TYPE STRING,
+ P_SIZE INT,
+ P_CONTAINER STRING,
+ P_RETAILPRICE DOUBLE,
+ P_COMMENT STRING) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
+LOCATION '/tmp/tpch-generate5/part/';
+
+drop table if exists supplier;
+create external table supplier (S_SUPPKEY BIGINT,
+ S_NAME STRING,
+ S_ADDRESS STRING,
+ S_NATIONKEY BIGINT,
+ S_PHONE STRING,
+ S_ACCTBAL DOUBLE,
+ S_COMMENT STRING) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE 
+LOCATION '/tmp/tpch-generate/5/supplier/';
+
+drop table if exists partsupp;
+create external table partsupp (PS_PARTKEY BIGINT,
+ PS_SUPPKEY BIGINT,
+ PS_AVAILQTY INT,
+ PS_SUPPLYCOST DOUBLE,
+ PS_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION'/tmp/tpch-generate/5/partsupp';
+
+drop table if exists nation;
+create external table nation (N_NATIONKEY BIGINT,
+ N_NAME STRING,
+ N_REGIONKEY BIGINT,
+ N_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION '/tmp/tpch-generate/5/nation';
+
+drop table if exists region;
+create external table region (R_REGIONKEY BIGINT,
+ R_NAME STRING,
+ R_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION '/tmp/tpch-generate/5/region';
+
+drop table if exists customer;
+create external table customer (C_CUSTKEY BIGINT,
+ C_NAME STRING,
+ C_ADDRESS STRING,
+ C_NATIONKEY BIGINT,
+ C_PHONE STRING,
+ C_ACCTBAL DOUBLE,
+ C_MKTSEGMENT STRING,
+ C_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION '/tmp/tpch-generate/5/customer';
+
+drop table if exists orders;
+create external table orders (O_ORDERKEY BIGINT,
+ O_CUSTKEY BIGINT,
+ O_ORDERSTATUS STRING,
+ O_TOTALPRICE DOUBLE,
+ O_ORDERDATE STRING,
+ O_ORDERPRIORITY STRING,
+ O_CLERK STRING,
+ O_SHIPPRIORITY INT,
+ O_COMMENT STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|' STORED AS TEXTFILE
+LOCATION '/tmp/tpch-generate/5/orders';
+
+analyze table customer compute statistics;
+analyze table lineitem compute statistics;
+analyze table nation compute statistics;
+analyze table orders compute statistics;
+analyze table part compute statistics;
+analyze table partsupp compute statistics;
+analyze table region compute statistics;
+analyze table supplier compute statistics;
+
+analyze table customer compute statistics for columns;
+analyze table lineitem compute statistics for columns;
+analyze table nation compute statistics for columns;
+analyze table orders compute statistics for columns;
+analyze table part compute statistics for columns;
+analyze table partsupp compute statistics for columns;
+analyze table region compute statistics for columns;
+analyze table supplier compute statistics for columns;
+
+create database if not exists tpch_orc;
+use tpch_orc;
+
+drop table if exists tpch_orc.customer;
+create table tpch_orc.customer
+stored as orc
+as select * from tpch_text.customer;
+
+drop table if exists tpch_orc.lineitem;
+create table tpch_orc.lineitem
+stored as orc
+as select * from tpch_text.lineitem;
+
+drop table if exists tpch_orc.nation;
+create table tpch_orc.nation
+stored as orc
+as select * from tpch_text.nation;
+
+drop table if exists tpch_orc.orders;
+create table tpch_orc.orders
+stored as orc
+as select * from tpch_text.orders;
+
+drop table if exists tpch_orc.part;
+create table tpch_orc.part
+stored as orc
+as select * from tpch_text.part;
+
+drop table if exists tpch_orc.partsupp;
+create table tpch_orc.partsupp
+stored as orc
+as select * from tpch_text.partsupp;
+
+drop table if exists tpch_orc.region;
+create table tpch_orc.region
+stored as orc
+as select * from tpch_text.region;
+
+drop table if exists tpch_orc.supplier;
+create table tpch_orc.supplier
+stored as orc
+as select * from tpch_text.supplier;
+
+analyze table tpch_orc.customer compute statistics;
+analyze table tpch_orc.lineitem compute statistics;
+analyze table tpch_orc.nation compute statistics;
+analyze table tpch_orc.orders compute statistics;
+analyze table tpch_orc.part compute statistics;
+analyze table tpch_orc.partsupp compute statistics;
+analyze table tpch_orc.region compute statistics;
+analyze table tpch_orc.supplier compute statistics;
+
+
+analyze table tpch_orc.customer compute statistics for columns;
+analyze table tpch_orc.lineitem compute statistics for columns;
+analyze table tpch_orc.nation compute statistics for columns;
+analyze table tpch_orc.orders compute statistics for columns;
+analyze table tpch_orc.part compute statistics for columns;
+analyze table tpch_orc.partsupp compute statistics for columns;
+analyze table tpch_orc.region compute statistics for columns;
+analyze table tpch_orc.supplier compute statistics for columns;
+
+
+
+alter table region add constraint region_c1 primary key (r_regionkey) disable novalidate;
+alter table nation add constraint nation_c1 primary key (n_nationkey) disable novalidate;
+alter table part add constraint part_c1 primary key (p_partkey) disable novalidate;
+alter table supplier add constraint supplier_c1 primary key (s_suppkey) disable novalidate;
+alter table partsupp add constraint partsupp_c1 primary key (ps_partkey, ps_suppkey) disable novalidate;
+alter table customer add constraint customer_c1 primary key (c_custkey) disable novalidate;
+alter table lineitem add constraint lineitem_c1 primary key (l_orderkey, l_linenumber) disable novalidate;
+alter table orders add constraint orders_c1 primary key (o_orderkey) disable novalidate;
+
+alter table nation add constraint nation_c2 foreign key (n_regionkey) references region(r_regionkey) disable novalidate rely;
+alter table supplier add constraint supplier_c2 foreign key (s_nationkey) references nation(n_nationkey) disable novalidate rely;
+alter table customer add constraint customer_c2 foreign key (c_nationkey) references nation(n_nationkey) disable novalidate rely;
+alter table partsupp add constraint partsupp_c2 foreign key (ps_suppkey) references supplier(s_suppkey) disable novalidate rely;
+alter table partsupp add constraint partsupp_c3 foreign key (ps_partkey) references part(p_partkey) disable novalidate rely;
+alter table orders add constraint orders_c2 foreign key (o_custkey) references customer(c_custkey) disable novalidate rely;
+alter table lineitem add constraint lineitem_c2 foreign key (l_orderkey) references orders(o_orderkey) disable novalidate rely;
+alter table lineitem add constraint lineitem_c3 foreign key (l_partkey, l_suppkey) references partsupp(ps_partkey, ps_suppkey) disable novalidate rely;
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+
+
+create table tpch_parquet.lineitem
+stored as parquet
+as select * from tpch_text_5.lineitem;
+
+create table tpch_parquet.customer
+stored as parquet
+as select * from tpch_text_5.customer;
+
+create table tpch_parquet.nation
+stored as parquet
+as select * from tpch_text_5.nation;
+
+create table tpch_parquet.part
+stored as parquet
+as select * from tpch_text_5.part;
+
+create table tpch_parquet.partsupp
+stored as parquet
+as select * from tpch_text_5.partsupp;
+
+create table tpch_parquet.region
+stored as parquet
+as select * from tpch_text_5.region;
+
+create table tpch_parquet.supplier
+stored as parquet
+as select * from tpch_text_5.supplier;
+
+create table tpch_parquet.orders
+stored as parquet
+as select * from tpch_text_5.orders;
+
+
+
+CREATE TABLE tpch_orc.order_lineitem
+stored as orc
+AS SELECT
+ O_ORDERKEY,
+ O_CUSTKEY,
+ O_ORDERSTATUS,
+ O_TOTALPRICE,
+ O_ORDERDATE,
+ O_ORDERPRIORITY,
+ O_CLERK,
+ O_SHIPPRIORITY,
+ O_COMMENT,
+ L_PARTKEY,
+ L_SUPPKEY,
+ L_LINENUMBER,
+ L_QUANTITY,
+ L_EXTENDEDPRICE ,
+ L_DISCOUNT,
+ L_TAX,
+ L_RETURNFLAG,
+ L_LINESTATUS,
+ L_SHIPDATE,
+ L_COMMITDATE,
+ L_RECEIPTDATE,
+ L_SHIPINSTRUCT,
+ L_SHIPMODE,
+ L_COMMENT
+ FROM lineitem 
+ join orders on orders.O_ORDERKEY=lineitem.L_ORDERKEY;
+
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+--Needs to be in csv, tsv or json format. If csv or tsv, specifiy if a header is included and if not, list out the columns of the table
+-- to find the hadoop version, run command hdfs version. Append to org.apache.hadoop:hadoop-client:
+for the hadoopDependencyCoordinates
+
+{
+  "type" : "index_hadoop",
+  "spec" : {
+    "dataSchema" : {
+      "dataSource" : "tpchq3",
+      "parser" : {
+        "type" : "hadoopyString",
+        "parseSpec" : {
+          "format" : "csv",
+          "hasHeaderRow" : "false",
+          "timestampSpec" : {
+            "column" : "l_shipdate",
+            "format" : "auto"
+          },
+          "dimensionsSpec" : {
+            "dimensions": ["l_orderkey","l_partkey","l_suppkey","l_linenumber","l_returnflag","l_linestatus","l_shipmode"],
+            "dimensionExclusions" : ["l_receiptdate","l_commitdate","l_shipinstruct","l_comment"],
+            "spatialDimensions" : []
+          },
+        "columns": ["l_orderkey","l_partkey","l_suppkey","l_linenumber","l_quantity","l_extendedprice","l_discount","l_tax","l_returnflag","l_linestatus","l_shipdate","l_commitdate","l_receiptdate","l_shipinstruct","l_shipmode","l_comment"]
+    }
+      },
+      "metricsSpec" : [
+        {
+          "type" : "count",
+          "name" : "count"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : " l_quantity_sum",
+          "fieldName" : " l_quantity"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_extendedprice_sum",
+          "fieldName" : "l_extendedprice"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_discount_sum",
+          "fieldName" : "l_discount"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_tax_sum",
+          "fieldName" : "l_tax"
+        },
+        {
+          "type" : "doubleMax",
+          "name" : " l_quantity_max",
+          "fieldName" : " l_quantity"
+        },
+        {
+          "type" : "doubleMax",
+          "name" : "l_extendedprice_max",
+          "fieldName" : "l_extendedprice"
+        },
+        {
+          "type" : "doubleMax",
+          "name" : "l_discount_max",
+          "fieldName" : "l_discount"
+        },
+        {
+          "type" : "doubleMax",
+          "name" : "l_tax_max",
+          "fieldName" : "l_tax"
+        }
+      ],
+      "granularitySpec" : {
+        "type" : "uniform",
+        "segmentGranularity" : "MONTH",
+        "queryGranularity" : "DAY",
+        "intervals" : [ "1992-01-02/1998-12-01" ]
+      }
+    },
+    "ioConfig" : {
+      "type" : "hadoop",
+      "inputSpec" : {
+        "type" : "static",
+        "paths" : "hdfs:///tmp/lineitem"
+      }
+    },
+    "tuningConfig" : {
+      "type": "hadoop"
+    }
+  },
+  "hadoopDependencyCoordinates": ["org.apache.hadoop:hadoop-client:3.1.1.3.0.1.0-187"]
+}
+
+curl -X 'POST' -H 'Content-Type:application/json' -d @/tmp/druid_inges_spec/lineitem_spec.json jtaras-druid2.field.hortonworks.com:8090/druid/indexer/v1/task
+
+
+--dump the data to hdfs directory
+insert overwrite directory '/tmp/lineitem/' row format delimited fields terminated by ',' select * from tpch_text.lineitem;
+
+
+CREATE EXTERNAL TABLE lineitem_druid_big
+STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES ("druid.datasource" = "lineitem_druid_v1");
+
+use tpch_orc;
+set hive.llap.execution.mode=all;
+set hive.druid.broker.address.default=jtaras-druid1.field.hortonworks.com:8082;
+set hive.druid.metadata.username=druid;
+set hive.druid.metadata.password=MyNewPass4!;
+set hive.druid.metadata.uri=jdbc:mysql://jtaras-druid2.field.hortonworks.com:356/druid;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS lineitem_druid_internal STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES ("druid.segment.granularity" = "MONTH", "druid.query.granularity" = "DAY")
+AS SELECT
+cast(L_SHIPDATE as timestamp) as `__time`,
+cast(L_ORDERKEY as string),
+L_QUANTITY,
+L_EXTENDEDPRICE,
+L_DISCOUNT,
+L_TAX,
+L_RETURNFLAG,
+L_LINESTATUS,
+L_SHIPMODE,
+L_COMMITDATE,
+L_RECEIPTDATE,
+L_EXTENDEDPRICE * (1 - L_DISCOUNT) as SUM_DISC_PRICE,
+L_EXTENDEDPRICE * (1 - L_DISCOUNT) * (1 + L_TAX) as SUM_CHARGE
+FROM lineitem
+WHERE L_SHIPDATE = '1993-04-01';
+
+INSERT INTO lineitem_druid_internal
+SELECT
+cast(L_SHIPDATE as timestamp) as `__time`,
+cast(L_ORDERKEY as string),
+L_QUANTITY,
+L_EXTENDEDPRICE,
+L_DISCOUNT,
+L_TAX,
+L_RETURNFLAG,
+L_LINESTATUS,
+L_SHIPMODE,
+L_COMMITDATE,
+L_RECEIPTDATE,
+L_EXTENDEDPRICE * (1 - L_DISCOUNT) as SUM_DISC_PRICE,
+L_EXTENDEDPRICE * (1 - L_DISCOUNT) * (1 + L_TAX) as SUM_CHARGE
+FROM lineitem
+WHERE L_SHIPDATE = '1993-09-01';
+
+
+
+explain
+SELECT
+SUM(SUM_CHARGE) AS CHARGE,
+O_CLERK
+FROM lineitem_druid_internal
+JOIN orders ON
+cast(orders.O_ORDERKEY as string)=lineitem_druid_internal.L_ORDERKEY
+WHERE `__TIME` = '1993-07-01'
+GROUP BY O_CLERK
+ORDER BY CHARGE DESC
+LIMIT 10
+
+SELECT
+SUM(SUM_BASE_PRICE),
+SUM(SUM_CHARGE),
+SUM(SUM_DISC_PRICE),
+L_SHIPMODE,
+L_RETURNFLAG
+FROM lineitem_druid_big
+WHERE `__TIME` = '1993-09-01'
+GROUP BY L_SHIPMODE, L_RETURNFLAG
+
+
+
+
+
+select sum(l_quantity),sum(l_tax),l_returnflag from lineitem_druid_internal group by l_returnflag;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS orders_druid_internal STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES ("druid.segment.granularity" = "MONTH", "druid.query.granularity" = "DAY")
+AS SELECT
+CAST(O_ORDERDATE AS TIMESTAMP) as `__time`,
+CAST(O_ORDERKEY AS STRING),
+CAST(O_CUSTKEY AS STRING),
+O_ORDERSTATUS,
+O_TOTALPRICE ,
+O_ORDERPRIORITY,
+O_CLERK,
+O_SHIPPRIORITY
+FROM orders where O_ORDERDATE BETWEEN '1993-03-01' AND '1993-04-01';
+
+select sum(O_TOTALPRICE),O_CLERK FROM orders_druid_internal group by O_CLERK LIMIT 5;
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+--add some transformations to the ingest spec
+
+{
+  "type" : "index_hadoop",
+  "spec" : {
+    "dataSchema" : {
+      "dataSource" : "tpchq3_transform_small",
+      "parser" : {
+        "type" : "hadoopyString",
+        "parseSpec" : {
+          "format" : "csv",
+          "hasHeaderRow" : "false",
+          "timestampSpec" : {
+            "column" : "l_shipdate",
+            "format" : "auto"
+          },
+          "dimensionsSpec" : {
+            "dimensions": ["l_orderkey","l_partkey","l_suppkey","l_linenumber","l_returnflag","l_linestatus","l_shipmode","l_commitdate","l_receiptdate"],
+            "dimensionExclusions" : ["l_shipinstruct","l_comment"],
+            "spatialDimensions" : []
+          },
+        "columns": ["l_orderkey","l_partkey","l_suppkey","l_linenumber","l_quantity","l_extendedprice","l_discount","l_tax","l_returnflag","l_linestatus","l_shipdate","l_commitdate","l_receiptdate","l_shipinstruct","l_shipmode","l_comment"]
+    }
+      },
+      "metricsSpec" : [
+        {
+          "type" : "count",
+          "name" : "count"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : " l_quantity_sum",
+          "fieldName" : " l_quantity"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "sum_base_price",
+          "fieldName" : "l_extendedprice"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_discount_sum",
+          "fieldName" : "l_discount"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_tax_sum",
+          "fieldName" : "l_tax"
+        },
+    {
+          "type" : "doubleSum",
+          "name" : "sum_charge",
+          "fieldName" : "sum_charge"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "sum_disc_price",
+          "fieldName" : "sum_disc_price"
+        }
+      ],
+      "granularitySpec" : {
+        "type" : "uniform",
+        "segmentGranularity" : "MONTH",
+        "queryGranularity" : "DAY",
+        "intervals" : [ "1992-01-02/1998-12-01" ]
+      },
+      "transformSpec" : {
+    "transforms" : [
+         {
+            "type" : "expression",
+            "name" : "sum_charge",
+            "expression" : "l_extendedprice * (1 - l_discount) * (1 + l_tax)"
+            },
+        {
+            "type" : "expression",
+            "name" : "sum_disc_price",
+            "expression" : "l_extendedprice * (1 - l_discount)"
+            }
+    ]
+       }
+    },
+    "ioConfig" : {
+      "type" : "hadoop",
+      "inputSpec" : {
+        "type" : "static",
+        "paths" : "hdfs:///tmp/lineitem_small"
+      }
+    },
+    "tuningConfig" : {
+      "type": "hadoop"
+    }
+  },
+  "hadoopDependencyCoordinates": ["org.apache.hadoop:hadoop-client:3.1.1.3.0.1.0-187"]
+}
+
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+
+--add some filtering rules to the ingest spec
+
+{
+  "type" : "index_hadoop",
+  "spec" : {
+    "dataSchema" : {
+      "dataSource" : "lineitem",
+      "parser" : {
+        "type" : "hadoopyString",
+        "parseSpec" : {
+          "format" : "csv",
+          "hasHeaderRow" : "false",
+          "timestampSpec" : {
+            "column" : "l_shipdate",
+            "format" : "auto"
+          },
+          "dimensionsSpec" : {
+            "dimensions": ["l_orderkey","l_partkey","l_suppkey","l_linenumber","l_returnflag","l_linestatus","l_shipmode","l_commitdate","l_receiptdate"],
+            "dimensionExclusions" : ["l_shipinstruct","l_comment"],
+            "spatialDimensions" : []
+          },
+        "columns": ["l_orderkey","l_partkey","l_suppkey","l_linenumber","l_quantity","l_extendedprice","l_discount","l_tax","l_returnflag","l_linestatus","l_shipdate","l_commitdate","l_receiptdate","l_shipinstruct","l_shipmode","l_comment"]
+    }
+      },
+      "metricsSpec" : [
+        {
+          "type" : "count",
+          "name" : "count"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : " l_quantity_sum",
+          "fieldName" : " l_quantity"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_extendedprice_sum",
+          "fieldName" : "l_extendedprice"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_discount_sum",
+          "fieldName" : "l_discount"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "l_tax_sum",
+          "fieldName" : "l_tax"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "sum_charge",
+          "fieldName" : "sum_charge"
+        },
+        {
+          "type" : "doubleSum",
+          "name" : "sum_disc_price",
+          "fieldName" : "sum_disc_price"
+        }
+      ],
+      "granularitySpec" : {
+        "type" : "uniform",
+        "segmentGranularity" : "MONTH",
+        "queryGranularity" : "DAY",
+        "intervals" : [ "1992-01-02/1998-12-01" ]
+      },
+      "transformSpec" : {
+        "transforms" : [
+         {
+             "type" : "expression",
+             "name" : "sum_charge",
+             "expression" : "l_extendedprice * (1 - l_discount) * (1 + l_tax)"
+            },
+        {
+             "type" : "expression",
+             "name" : "sum_disc_price",
+             "expression" : "l_extendedprice * (1 - l_discount)"
+            }
+        ],
+        "filter" : {
+                "type" : "selector",
+                "dimension" : "l_shipmode",
+                "value" : "TRUCK"
+            }
+       }
+    },
+    "ioConfig" : {
+      "type" : "hadoop",
+      "inputSpec" : {
+        "type" : "static",
+        "paths" : "hdfs:///tmp/lineitem_small"
+      }
+    },
+    "tuningConfig" : {
+      "type": "hadoop"
+    }
+  },
+  "hadoopDependencyCoordinates": ["org.apache.hadoop:hadoop-client:3.1.1.3.0.1.0-187"]
+}
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+
+
+
+> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic demo
+
+
+
+{"store_id": 29, "part_sku": "D-917", "rep_id": 14, "qty": 2, "__time": "2018-10-31 00:15:01.859", "cust_id": 508, "discount_amt": 20, "trxn_amt": 187.04}
+
+
+send the document to the supervisor
+
+curl -X POST -H 'Content-Type: application/json' -d @supervisor-spec.json jtaras-druid2.field.hortonworks.com:8090/druid/indexer/v1/supervisor
+
+
+{
+  "type": "kafka",
+  "dataSchema": {
+    "dataSource": "sales_data",
+    "parser": {
+      "type": "string",
+      "parseSpec": {
+        "format": "json",
+        "timestampSpec": {
+          "column": "trsn_time",
+          "format": "auto"
+        },
+        "dimensionsSpec": {
+          "dimensions": ["store_id", "part_sky", "rep_id", "cust_id"],
+          "dimensionExclusions": []
+        }
+      }
+    },
+    "metricsSpec": [
+      {
+        "name": "count",
+        "type": "count"
+      },
+      {
+        "name": "trxn_ammt",
+        "fieldName": "trxn_ammt",
+        "type": "doubleSum"
+      },
+      {
+        "name": "discount_amt",
+        "fieldName": "discount_amt",
+        "type": "doubleMin"
+      },
+      {
+        "name": "qty",
+        "fieldName": "qty",
+        "type": "doubleMax"
+      }
+    ],
+    "granularitySpec": {
+      "type": "uniform",
+      "segmentGranularity": "fifteen_minute",
+      "queryGranularity": "minute"
+    }
+  },
+  "tuningConfig": {
+    "type": "kafka",
+    "maxRowsPerSegment": 5000000
+  },
+  "ioConfig": {
+    "topic": "demo",
+    "consumerProperties": {
+      "bootstrap.servers": "jtaras-druid2.field.hortonworks.com:6667"
+    },
+    "taskCount": 1,
+    "replicas": 1,
+    "taskDuration": "PT5M"
+  }
+}
+
+
+
+CREATE EXTERNAL TABLE sales_data
+STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES ("druid.datasource" = "sales_data_5min");
+
+select count(*) from sales_data;
+
+select sum(discount_amt),sum(qty),store_id,rep_id from sales_data group by store_id,rep_id
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+
+{"store_id": 29, "part_sku": "D-917", "rep_id": 14, "qty": 2, "__time": "2018-10-31 00:15:01.859", "cust_id": 508, "discount_amt": 20, "trxn_amt": 187.04}
+
+
+
+
+CREATE EXTERNAL TABLE sales_data_kafka
+(`store_id` string, 
+`part_sku` string, 
+`rep_id` string, 
+`qty` double,
+`__time` timestamp,
+`cust_id` string,
+`discount_amt` double,
+`trxn_amt` double)
+STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES (
+"kafka.bootstrap.servers" = "jtaras-druid2.field.hortonworks.com:6667",
+"kafka.topic" = "demo_v2",
+"druid.kafka.ingestion.useEarliestOffset" = "true",
+"druid.kafka.ingestion.maxRowsInMemory" = "500",
+"druid.kafka.ingestion.startDelay" = "PT1S",
+"druid.kafka.ingestion.period" = "PT10M",
+"druid.kafka.ingestion.consumer.retries" = "2");
+
+ALTER TABLE sales_data_kafka SET TBLPROPERTIES('druid.kafka.ingestion' = 'START');
+
+
+
+create table sales_reps (rep_id int, rep_name string, quota int);
+
+insert into sales_reps (rep_id, rep_name, quota ) values (0 , "Matt Ryan", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (1 , "Matt Bryant", 150000);
+insert into sales_reps (rep_id, rep_name, quota ) values (2 , "Julio Jones", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (3 , "Calvin Ridley", 120000);
+insert into sales_reps (rep_id, rep_name, quota ) values (4 , "Mohammed Sanu", 200000);
+insert into sales_reps (rep_id, rep_name, quota ) values (5 , "Deion Jones", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (6 , "Tevin Coleman", 50000);
+insert into sales_reps (rep_id, rep_name, quota ) values (7 , "Keanu Neal", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (8 , "Alex Mac", 120000);
+insert into sales_reps (rep_id, rep_name, quota ) values (9 , "Ryan Schraeder", 200000);
+insert into sales_reps (rep_id, rep_name, quota ) values (10 , "Robert Alford", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (11 , "Desmond Trufant", 50000);
+insert into sales_reps (rep_id, rep_name, quota ) values (12 , "Ricardo Allen", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (13 , "De'Vondre Cambell", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (14 , "Grady Jarett", 100000);
+insert into sales_reps (rep_id, rep_name, quota ) values (15 , "Takkarist Mickinley",100000);
+
+explain
+select
+sales.qty_sold,
+sales.sale_amt,
+sr.rep_name,
+(sales.sale_amt/quota) as quota_attainment
+from (
+select sum(qty) as qty_sold,sum(trxn_amt) as sale_amt,cast(rep_id as int) as rep_id 
+from sales_data_kafka 
+group by rep_id) sales
+join sales_reps sr on
+sr.rep_id=sales.rep_id
+
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+
+--flatten and index
+
+CREATE EXTERNAL TABLE IF NOT EXISTS flattened_schema STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES ("druid.segment.granularity" = "MONTH", "druid.query.granularity" = "DAY")
+AS SELECT
+L_LINENUMBER,
+L_QUANTITY,
+L_EXTENDEDPRICE,
+L_DISCOUNT,
+L_TAX,
+L_RETURNFLAG,
+L_LINESTATUS,
+L_SHIPDATE,
+L_COMMITDATE,
+L_RECEIPTDATE,
+L_SHIPINSTRUCT,
+L_SHIPMODE,
+P_PARTKEY
+P_NAME,
+P_MFGR,
+P_BRAND,
+P_TYPE,
+P_SIZE,
+P_CONTAINER,
+P_RETAILPRICE,
+S_SUPPKEY,
+S_NAME,
+S_ADDRESS,
+S_NATIONKEY,
+S_PHONE,
+S_ACCTBAL,
+PS_AVAILQTY,
+PS_SUPPLYCOST,
+N_NATIONKEY,
+N_NAME,
+N_REGIONKEY,
+R_REGIONKEY,
+R_NAME,
+C_CUSTKEY,
+C_NAME,
+C_ADDRESS,
+C_NATIONKEY,
+C_PHONE,
+C_ACCTBAL,
+C_MKTSEGMENT,
+O_ORDERKEY,
+O_ORDERSTATUS,
+O_TOTALPRICE,
+cast(O_ORDERDATE as timestamp) as `__time`,
+O_ORDERPRIORITY,
+O_CLERK STRING,
+O_SHIPPRIORITY 
+FROM ORDERS 
+JOIN LINEITEM ON 
+ORDERS.O_ORDERKEY=LINEITEM.L_ORDERKEY
+LEFT JOIN CUSTOMER ON
+CUSTOMER.C_CUSTKEY=ORDERS.O_CUSTKEY
+LEFT JOIN NATION ON
+NATION.N_NATIONKEY=CUSTOMER.C_NATIONKEY
+LEFT JOIN REGION ON
+REGION.R_REGIONKEY=NATION.N_REGIONKEY
+LEFT JOIN PARTSUPP ON
+PARTSUPP.PS_PARTKEY=LINEITEM.L_PARTKEY AND
+PARTSUPP.PS_SUPPKEY=LINEITEM.L_SUPPKEY
+LEFT JOIN PART ON
+PART.P_PARTKEY=PARTSUPP.PS_PARTKEY
+LEFT JOIN SUPPLIER ON
+SUPPLIER.S_SUPPKEY=PARTSUPP.PS_SUPPKEY
+WHERE O_ORDERDATE = '1993-07-01';
+
+use tpch_orc;
+CREATE EXTERNAL TABLE IF NOT EXISTS flattened_schema_druid STORED BY 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+TBLPROPERTIES ("druid.segment.granularity" = "MONTH", "druid.query.granularity" = "DAY")
+AS SELECT
+cast(O_ORDERDATE as timestamp) as `__time`,
+L_LINENUMBER,
+L_QUANTITY,
+L_EXTENDEDPRICE,
+L_DISCOUNT,
+L_TAX,
+L_RETURNFLAG,
+L_LINESTATUS,
+L_SHIPDATE,
+L_COMMITDATE,
+L_RECEIPTDATE,
+L_SHIPMODE,
+cast(P_PARTKEY as string) as P_PARTKEY,
+cast(P_NAME as string) as P_NAME,
+P_MFGR,
+P_BRAND,
+P_TYPE,
+cast(P_SIZE as string) as P_SIZE,
+P_CONTAINER,
+P_RETAILPRICE,
+cast(S_SUPPKEY as string) as S_SUPPKEY,
+S_NAME,
+S_ADDRESS,
+cast(S_NATIONKEY as string) as S_NATIONKEY,
+S_PHONE,
+S_ACCTBAL,
+PS_AVAILQTY,
+PS_SUPPLYCOST,
+cast(N_NATIONKEY as string) as N_NATIONKEY,
+N_NAME,
+cast(N_REGIONKEY as string) as N_REGIONKEY,
+cast(R_REGIONKEY as string) as R_REGIONKEY,
+R_NAME,
+cast(C_CUSTKEY as string) as C_CUSTKEY,
+C_NAME,
+C_ADDRESS,
+cast(C_NATIONKEY as string) as C_NATIONKEY,
+C_PHONE,
+C_ACCTBAL,
+C_MKTSEGMENT,
+cast(O_ORDERKEY as string) as O_ORDERKEY,
+O_ORDERSTATUS,
+O_TOTALPRICE,
+O_ORDERPRIORITY,
+O_CLERK STRING,
+cast(O_SHIPPRIORITY as string) as O_SHIPPRIORITY
+FROM ORDERS 
+JOIN LINEITEM ON 
+ORDERS.O_ORDERKEY=LINEITEM.L_ORDERKEY
+LEFT JOIN CUSTOMER ON
+CUSTOMER.C_CUSTKEY=ORDERS.O_CUSTKEY
+LEFT JOIN PART ON
+PART.P_PARTKEY=PARTSUPP.PS_PARTKEY
+LEFT JOIN SUPPLIER ON
+SUPPLIER.S_SUPPKEY=PARTSUPP.PS_SUPPKEY;
+
+
+L_ORDERKEY BIGINT,
+L_PARTKEY BIGINT,
+L_SUPPKEY BIGINT,
+L_LINENUMBER INT,
+L_QUANTITY DOUBLE,
+L_EXTENDEDPRICE DOUBLE,
+L_DISCOUNT DOUBLE,
+L_TAX DOUBLE,
+L_RETURNFLAG STRING,
+L_LINESTATUS STRING,
+L_SHIPDATE STRING,
+L_COMMITDATE STRING,
+L_RECEIPTDATE STRING,
+L_SHIPMODE STRING,
+
+P_PARTKEY BIGINT,
+ P_NAME STRING,
+ P_MFGR STRING,
+ P_BRAND STRING,
+ P_TYPE STRING,
+ P_SIZE INT,
+ P_CONTAINER STRING,
+ P_RETAILPRICE DOUBLE,
+ P_COMMENT STRING
+ S_SUPPKEY BIGINT,
+ S_NAME STRING,
+ S_ADDRESS STRING,
+ S_NATIONKEY BIGINT,
+ S_PHONE STRING,
+ S_ACCTBAL DOUBLE,
+ S_COMMENT STRING
+
+ PS_PARTKEY BIGINT,
+ PS_SUPPKEY BIGINT,
+ PS_AVAILQTY INT,
+ PS_SUPPLYCOST DOUBLE,
+ PS_COMMENT STRING
+
+
+C_CUSTKEY BIGINT,
+ C_NAME STRING,
+ C_ADDRESS STRING,
+ C_NATIONKEY BIGINT,
+ C_PHONE STRING,
+ C_ACCTBAL DOUBLE,
+ C_MKTSEGMENT STRING,
+
+O_ORDERKEY BIGINT,
+ O_CUSTKEY BIGINT,
+ O_ORDERSTATUS STRING,
+ O_TOTALPRICE DOUBLE,
+ O_ORDERDATE STRING,
+ O_ORDERPRIORITY STRING,
+ O_CLERK STRING,
+ O_SHIPPRIORITY INT,
+
